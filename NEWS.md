@@ -1,12 +1,90 @@
 # librsync NEWS
 
-## librsync 2.2.2
+## librsync 2.3.3
 
 NOT RELEASED YET
 
+## librsync 2.3.2
+
+Released 2021-04-10
+
+ * Fix #214 heap corruption for too small kbloom. This could have crashed
+   delta operations for very small files/signatures. Strangely it didn't seem
+   to cause problems for most compilers/platforms, but did trigger errors for
+   new versions of MSVC. (ljusten,
+   https://github.com/librsync/librsync/pull/213)
+
+ * Fix #207 and add Travis Windows checks and improve compatibility. Turn on
+   `-Wconversion -Wno-sign-conversion` warnings for clang. Add MSVC compiler
+   flags to turn off posix warnings. Make all code compile clean with no
+   warnings on all Travis platforms. Added cmake config checking for windows
+   `io.h` and improve `fileutil.c` for MSVC. Fix broken error handling in
+   `rs_file_copy_cb()`. Improved trace output, making it less spamy and more
+   consistent. Add patch checking for invalid literal lengths. Improve
+   internal variable and argument types. Add explicit type conversions.
+   (dbaarda, https://github.com/librsync/librsync/pull/208)
+
+ * Fix a bug so patch will now fail returning RS_CORRUPT on encountering a
+   zero length copy command instead of hanging. Make copy_cb() copying more
+   data than requested an assert-fail on debug builds, and a log-warning for
+   release builds. Make trace output a little less spammy about copy_cb()
+   return values. (dbaarda, https://github.com/librsync/librsync/pull/206)
+
+## librsync 2.3.1
+
+Released 2020-05-19
+
+ * Fix #198 cmake popt detection using pkg-config and #199 test scripts on
+   FreeBSD. Fixes and tidies FindPOPT.cmake and Findlibb2.cmake to use
+   pkg-config correctly and behave more like official FindPackage() cmake
+   modules. Makes all test scripts use /bin/sh instead of /bin/bash. (dbaarda,
+   mandree https://github.com/librsync/librsync/pull/200)
+
+ * Change default block_len to always be a multiple of the blake2b 128 byte
+   blocksize for efficiency. Tidy and update docs to explain using
+   rs_sig_args() and rs_build_hash_table(), add rs_file_*() utils, and
+   document new magic types. Remove really obsolete entries in TODO.md. Update
+   to Doxygen 1.8.16. (dbaarda, https://github.com/librsync/librsync/pull/195)
+
+ * Improve hashtable performance by adding a small optional bloom filter,
+   reducing max loadfactor from 80% to 70%, Fix hashcmp_count stats to include
+   comparing against empty buckets. This speeds up deltas by 20%~50%.
+   (dbaarda, https://github.com/librsync/librsync/pull/192,
+   https://github.com/librsync/librsync/pull/193,
+   https://github.com/librsync/librsync/pull/196)
+
+ * Optimize rabinkarp_update() by correctly using unsigned constants and
+   manually unrolling the loop for best performance. (dbaarda,
+   https://github.com/librsync/librsync/pull/191)
+
+## librsync 2.3.0
+
+Released 2020-04-07
+
+ * Bump minor version from 2.2.1 to 2.3.0 to reflect additional rs_sig_args()
+   and strong_len=-1 support.
+
+ * Add public rs_sig_args() function for getting the recommend signature args
+   from the file size. Added support to rdiff for `--sum-size=-1` to indicate
+   "use minimum size safe against random block collisions". Added warning
+   output for sum-sizes that are too small to be safe. Fixed possible rdiff
+   bug affecting popt parsing on non-little-endian platforms. (dbaarda,
+   https://github.com/librsync/librsync/pull/109)
+
+ * Fixed yet more compiler warnings for various platforms/compilers.
+   (Adsun701, texierp, https://github.com/librsync/librsync/pull/187,
+   https://github.com/librsync/librsync/pull/188)
+
+ * Improved cmake popt handling to find popt dependencies using PkgConfig.
+   (ffontaine, https://github.com/librsync/librsync/pull/186)
+
+ * Tidied internal code and improved tests for netint.[ch], tube.c, and
+   hashtable.h. (dbaarda, https://github.com/librsync/librsync/pull/183
+   https://github.com/librsync/librsync/pull/185).
+
  * Improved C99 compatibility. Add `-std=c99 -pedantic` to `CMAKE_C_FLAGS` for
    gcc and clang. Fix all C99 warnings by making all code C99 compliant. Tidy
-   all CMake checks, #cmakedefines, and #includes. Fix 64bit support for
+   all CMake checks, `#cmakedefines`, and `#includes`. Fix 64bit support for
    mdfour checksums (texierp, dbaarda,
    https://github.com/librsync/librsync/pull/181,
    https://github.com/librsync/librsync/pull/182)
